@@ -25,7 +25,8 @@ uvicorn app.main:app --reload
 - `잭다니엘 3, 하이볼 12` — 일괄 텍스트 입력으로 마감 처리
 - `발주목록` — 부족 재고 기반 발주 목록 생성/조회
 
-## Phase 2 (예정)
+## Phase 2
 
-- APScheduler를 이용한 매일 정해진 시간 부족 재고 알림
-- 주간 소비 리포트
+- APScheduler를 이용해 매일 `NOTIFICATION_TIME`에 부족 재고를 카카오 푸시로 알림
+- 매주 `WEEKLY_REPORT_DAY`(기본 월요일)에 최근 7일 소비량 기준 주간 리포트 발송
+- 푸시 발송은 `KAKAO_CHANNEL_TOKEN`, `KAKAO_PUSH_API_URL`, `ADMIN_USER_ID`가 모두 설정된 경우에만 동작 (미설정 시 조용히 스킵)

@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -137,6 +138,19 @@ async def get_pending_orders(db: AsyncSession) -> list[Order]:
         select(Order).where(Order.status == "pending").order_by(Order.created_at)
     )
     return list(result.scalars().all())
+
+
+async def get_weekly_consumption(db: AsyncSession, days: int = 7) -> dict[int, int]:
+    since = datetime.utcnow() - timedelta(days=days)
+    result = await db.execute(
+        select(InventoryLog).where(InventoryLog.created_at >= since)
+    )
+    consumption: dict[int, int] = {}
+    for log in result.scalars().all():
+        delta = log.before_quantity - log.after_quantity
+        if delta > 0:
+            consumption[log.item_id] = consumption.get(log.item_id, 0) + delta
+    return consumption
 
 
 async def complete_order(db: AsyncSession, order_id: int) -> Order:

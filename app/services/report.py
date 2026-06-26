@@ -52,6 +52,20 @@ def build_closing_input_response(favorite_items: list[Item]) -> dict:
     )
 
 
+def build_weekly_report_text(consumption: dict[int, int], items_by_id: dict[int, Item]) -> str:
+    if not consumption:
+        return "📊 주간 소비 리포트\n지난 7일간 소비된 품목이 없습니다."
+
+    ranked = sorted(consumption.items(), key=lambda kv: kv[1], reverse=True)
+    lines = ["📊 주간 소비 리포트 (최근 7일)", "─" * 20]
+    for item_id, consumed in ranked:
+        item = items_by_id.get(item_id)
+        name = item.name if item else f"품목#{item_id}"
+        unit = item.unit if item else ""
+        lines.append(f"• {name}: {consumed}{unit or ''} 소비")
+    return "\n".join(lines)
+
+
 def build_order_list_response(orders, items_by_id: dict[int, Item]) -> dict:
     if not orders:
         text = "📋 발주할 품목이 없습니다."
